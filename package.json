@@ -1,0 +1,24 @@
+{
+  "name": "10-employee-tracker",
+  "version": "1.0.0",
+  "description": "employee tracker",
+  "main": "tracker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zoneam/Employee-Tracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zoneam/Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/Zoneam/Employee-Tracker#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "inquirer": "^8.1.1",
+    "mysql": "^2.18.1"
+  }
+}

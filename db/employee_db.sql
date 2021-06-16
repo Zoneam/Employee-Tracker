@@ -12,7 +12,7 @@ CREATE TABLE departments (
 CREATE TABLE roles (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   title varchar(30) NOT NULL,
-  salary decimal(10,4) NOT NULL,
+  salary decimal(10,2) NOT NULL,
   department_id INT NOT NULL,
   CONSTRAINT `department_id` FOREIGN KEY (department_id) REFERENCES departments (id) ON UPDATE CASCADE
 );
