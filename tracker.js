@@ -13,15 +13,15 @@ const connection = mysql.createConnection({
 });
 
 function init(){
-    console.clear();
+   // console.clear();
     inquirer.prompt(whatToDoPrompts)
     .then((answers)=>{
         switch (answers.whatToDo) {
             case "View all employees":
-                connection.query('SELECT * FROM employees', (err, res) => {
+                connection.query('SELECT * FROM employees JOIN roles ON employees.role_id = roles.id', (err, res) => {
                     if (err) throw err;
                     console.table(res);
-                    connection.end();
+                    init();
                   });
                 return;
             case "View all employees by department":
@@ -55,7 +55,7 @@ function addEmployee(){
         res.forEach((emp) => {
             managers.push(emp.first_name + " " + emp.last_name);
         });
-       // managers.push("None") //////--------------if none -----
+        managers.push("None")
         inquirer.prompt([{
             message: "Who is employees manager ?",
             name: "employeeManager",
@@ -64,18 +64,19 @@ function addEmployee(){
         }])
         .then((answer)=> {
             employee.push(answer)
-            //if (answer.employeeManager !== "None") {}
             connection.query(`SELECT id FROM employees WHERE CONCAT(first_name, " ", last_name) = '${answer.employeeManager}'`, (err, res) =>{
                 if (err)
                     throw err;
-                managerId = res[0].id;
-
-
+                if(res == ""){
+                    managerId = null;
+                } else {
+                    managerId = res[0].id;
+                }
                 connection.query(`SELECT title FROM roles`, (err, res) =>{
+                   // console.log(res)
                     if (err)
                         throw err;
                         res.forEach((role)=> {
-                            console.log(role.title)
                             roles.push(role.title)
                         })
                 inquirer.prompt([{ message: "What is the employee's role ?",
@@ -87,7 +88,6 @@ function addEmployee(){
                                         connection.query(`SELECT id FROM roles WHERE title = '${answer.employeeRoleId}'`, (err, res) =>{
                                             if (err)
                                                 throw err;
-                                                console.log('+++++',res)
                                                 roleId = res[0].id;
                                                 connection.query(
                                                     'INSERT INTO employees SET ?',
@@ -111,7 +111,24 @@ function addEmployee(){
         })
     });
     })
- }
+}
+
+
+function viewAllByManager(){
+    let managerIds = [];
+    connection.query('SELECT manager_id FROM employees Where manager_id IS NOT NULL GROUP BY manager_id', (err, res) => {
+        if (err) throw err;
+        res.forEach((id)=>{
+            managerIds.push(id.manager_id)
+        })
+        console.log(managerIds)
+            connection.query(`SELECT CONCAT(first_name," ", last_name) AS "managers" FROM employees WHERE id IN (${managerIds})`, (err, res) =>{
+                console.table(res);
+                //connection.end();
+                init();
+             })  
+    })
+}
 
 
 init();
