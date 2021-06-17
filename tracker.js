@@ -18,17 +18,13 @@ function init(){
     .then((answers)=>{
         switch (answers.whatToDo) {
             case "View all employees":
-                connection.query('SELECT * FROM employees JOIN roles ON employees.role_id = roles.id', (err, res) => {
-                    if (err) throw err;
-                    console.table(res);
-                    init();
-                  });
+                viewAllEmployees();
                 return;
             case "View all employees by department":
-               // viewAllByDepartments();
+                viewAllByDepartments();
                 return;
-            case "View all employees by manager":
-                viewAllByManager();
+            case "View all managers":
+                viewAllManagers();
                 return;
             case "Add employee":
                 addEmployee();
@@ -38,6 +34,38 @@ function init(){
                 return;
         }   
     })
+}
+
+function viewAllByDepartments(){
+    let departments = [];
+    let deptId;
+    connection.query('SELECT * FROM employee_db.departments', (err, res) => {
+        res.forEach((dept)=>{
+            departments.push(dept.id + ": " + dept.name)
+        })
+        inquirer.prompt([{
+            message: "Chose Department",
+            name: "department",
+            type: "list",
+            choices: departments
+        }])
+            .then((answer)=>{
+                deptId = answer.department.split(":")
+                console.log(deptId)
+                connection.query(`SELECT CONCAT(first_name," ", last_name) AS '${deptId[1]} Department' FROM employees WHERE role_id = ${deptId[0]}`, (err, res) =>{
+                    console.table(res)
+                    init();
+                })
+            })
+    })
+}
+
+function viewAllEmployees(){
+    connection.query('SELECT * FROM employees JOIN roles ON employees.role_id = roles.id ORDER BY first_name', (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        init();
+      });
 }
 
 function addEmployee(){
@@ -114,21 +142,23 @@ function addEmployee(){
 }
 
 
-function viewAllByManager(){
+function viewAllManagers(){
     let managerIds = [];
     connection.query('SELECT manager_id FROM employees Where manager_id IS NOT NULL GROUP BY manager_id', (err, res) => {
         if (err) throw err;
         res.forEach((id)=>{
             managerIds.push(id.manager_id)
         })
-        console.log(managerIds)
             connection.query(`SELECT CONCAT(first_name," ", last_name) AS "managers" FROM employees WHERE id IN (${managerIds})`, (err, res) =>{
                 console.table(res);
-                //connection.end();
                 init();
              })  
     })
 }
+
+
+
+
 
 
 init();
