@@ -1,4 +1,3 @@
-let express = require('express');
 let mysql = require('mysql');
 let inquirer =require('inquirer');
 const whatToDoPrompts = require('./Assets/initial_prompts')
@@ -13,7 +12,6 @@ const connection = mysql.createConnection({
 });
 
 function init(){
-   // console.clear();
     inquirer.prompt(whatToDoPrompts)
     .then((answers)=>{
         switch (answers.whatToDo) {
@@ -23,17 +21,98 @@ function init(){
             case "View all employees by department":
                 viewAllByDepartments();
                 return;
+            case "View all departments":
+                viewAllDepartments();
+                return;
+            case "View all roles":
+                viewAllRoles();
+                return;
             case "View all managers":
                 viewAllManagers();
                 return;
             case "Add employee":
                 addEmployee();
                 return;
+            case "Add role":
+                addRole();
+                return;
+            case "Add department":
+                addDepartment();
+                return;
             case "Quit":
                 connection.end();
                 return;
         }   
     })
+}
+
+function viewAllDepartments(){
+    connection.query('SELECT * FROM departments AS `Departments`', (err, res) => {
+        console.table(res)
+        init();
+    });
+}
+
+function addDepartment(){
+    inquirer.prompt([{
+        message: "What department you want to add ?",
+        name: "name",
+        type: "input"
+    }])
+        .then((answers)=>{
+                connection.query('INSERT INTO departments SET ?',
+                    {
+                    name: answers.name
+                    },
+                    (err, res) => {
+                    if (err) throw err;
+                    console.log(`Department added!\n`);
+                    init();
+                    }
+                            )
+                        }
+            )
+}
+
+function addRole(){
+    inquirer.prompt([{
+            message: "What role you want to add ?",
+            name: "role",
+            type: "input"
+        },
+        {
+            message: "What is the salery for this role ?",
+            name: "salary",
+            type: "input"
+        },
+        {
+            message: "What is the department id for this role ?",
+            name: "deptId",
+            type: "input"
+        }])
+            .then((answers)=>{
+                    connection.query('INSERT INTO roles SET ?',
+                        {
+                        title: answers.role,
+                        salary: answers.salary,
+                        department_id: answers.deptId,
+                        },
+                        (err, res) => {
+                        if (err) throw err;
+                        console.log(`Role added!\n`);
+                        init();
+                        }
+                                )
+                            }
+                )
+}
+
+
+function viewAllRoles() {
+    connection.query('SELECT * FROM employee_db.roles AS `Roles`', (err, res) => {
+        console.table(res)
+        init();
+    });
 }
 
 function viewAllByDepartments(){
@@ -141,7 +220,6 @@ function addEmployee(){
     })
 }
 
-
 function viewAllManagers(){
     let managerIds = [];
     connection.query('SELECT manager_id FROM employees Where manager_id IS NOT NULL GROUP BY manager_id', (err, res) => {
@@ -155,10 +233,5 @@ function viewAllManagers(){
              })  
     })
 }
-
-
-
-
-
 
 init();
