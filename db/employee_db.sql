@@ -14,7 +14,7 @@ CREATE TABLE roles (
   title varchar(30) NOT NULL,
   salary decimal(10,2) NOT NULL,
   department_id INT NOT NULL,
-  CONSTRAINT `department_id` FOREIGN KEY (department_id) REFERENCES departments (id) ON UPDATE CASCADE
+  FOREIGN KEY (department_id) REFERENCES departments (id)
 );
 
 CREATE TABLE employees (
@@ -23,6 +23,6 @@ CREATE TABLE employees (
   last_name varchar(30) NOT NULL,
   role_id int DEFAULT NULL,
   manager_id int DEFAULT NULL,
-  CONSTRAINT `manager_id` FOREIGN KEY (manager_id) REFERENCES employees (id) ON UPDATE CASCADE,
-  CONSTRAINT `role_id` FOREIGN KEY (role_id) REFERENCES roles (id) ON UPDATE CASCADE
+  FOREIGN KEY (manager_id) REFERENCES employees (id),
+  FOREIGN KEY (role_id) REFERENCES roles (id)
 ); 
