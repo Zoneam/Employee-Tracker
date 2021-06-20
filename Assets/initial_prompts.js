@@ -5,7 +5,7 @@ const whatToDo = [{
     choices: [
         "View all employees", //+
         "View all employees by department", //+
-        "View all departments", //-----
+        "View all departments", //++
         "View all roles", //++
         "View all managers", //+
         "Add employee", //+
@@ -13,7 +13,7 @@ const whatToDo = [{
         "Add department",
         "Update employee role",
         "Remove department",
-        "Remove employee",//-------------
+        "Remove employee",//++
         "Quit" //+
     ]
 }];

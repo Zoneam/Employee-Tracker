@@ -2,7 +2,7 @@ let mysql = require('mysql');
 let inquirer =require('inquirer');
 const whatToDoPrompts = require('./Assets/initial_prompts')
 const addEmployeePrompts = require('./Assets/add_employee');
-const { query } = require('express');
+
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -50,6 +50,7 @@ function init(){
                 removeEmployee();
                 return;
             case "Quit":
+                console.clear();
                 connection.end();
                 return;
         }   
@@ -89,8 +90,7 @@ function removeDepartment(){
 
 function removeEmployee(){
     let employee = [];
-    let id;
-    connection.query('SELECT first_name, last_name FROM employees', (err, res) => {
+        connection.query('SELECT first_name, last_name FROM employees', (err, res) => {
         if (err) throw err;
         res.forEach((emp) => {
             employee.push(emp.first_name + " " + emp.last_name);
@@ -400,7 +400,7 @@ function viewAllManagers(){
         res.forEach((id)=>{
             managerIds.push(id.manager_id)
         })
-            connection.query(`SELECT CONCAT(first_name," ", last_name) AS "managers" FROM employees WHERE id IN (${managerIds})`, (err, res) =>{
+            connection.query(`SELECT CONCAT(first_name," ", last_name) AS "Managers" FROM employees WHERE id IN (${managerIds})`, (err, res) =>{
                 console.clear();
                 console.table(res);
                 init();
